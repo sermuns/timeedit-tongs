@@ -4,8 +4,6 @@
 use dioxus::prelude::*;
 use serde::Deserialize;
 
-const STATIC_ASSETS: Asset = asset!("/assets/static");
-
 fn main() {
     dioxus::launch(App);
 }

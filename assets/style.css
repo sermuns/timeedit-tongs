@@ -1,12 +1,12 @@
 @font-face {
 	font-family: "Hanken Grotesk";
-	src: url("static/HankenGrotesk-VariableFont_wght.ttf");
+	src: url("/HankenGrotesk-VariableFont_wght.ttf");
 	font-style: normal;
 }
 
 @font-face {
 	font-family: "Hanken Grotesk";
-	src: url("static/HankenGrotesk-Italic-VariableFont_wght.ttf");
+	src: url("/HankenGrotesk-Italic-VariableFont_wght.ttf");
 	font-style: italic;
 }
 
