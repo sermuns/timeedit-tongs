@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 dioxus = { version = "0.7.1", features = [] }
+dioxus-sdk = { version = "0.7.0", features = ["time"] }
 fuzzy-matcher = { version = "0.3.7", features = ["compact"] }
 gloo-timers = "0.3.0"
 reqwest = { version = "0.13.1", features = ["json"] }

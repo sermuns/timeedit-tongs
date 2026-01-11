@@ -86,6 +86,15 @@ table {
 	}
 }
 
+#generated-url {
+	display: flex;
+	gap: 0.5em;
+	border: var(--line-width) solid var(--line-color);
+	span {
+		user-select: none;
+	}
+}
+
 label,
 input[type="checkbox"] {
 	cursor: pointer;
