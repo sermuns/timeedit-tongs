@@ -1,15 +1,18 @@
 use dioxus::prelude::*;
+use dioxus_sdk::time::use_debounce;
 use fuzzy_matcher::FuzzyMatcher;
 use fuzzy_matcher::skim::SkimMatcherV2;
 use std::fmt::Write;
 use std::sync::LazyLock;
+use std::time::Duration;
 
 use types::ObjectRecord;
 
 static RECORDS: LazyLock<Vec<ObjectRecord>> = LazyLock::new(|| {
     wincode::deserialize::<Vec<ObjectRecord>>(include_bytes!("../assets/records.bin")).unwrap()
 });
-static MATCHER: LazyLock<SkimMatcherV2> = LazyLock::new(SkimMatcherV2::default);
+static MATCHER: LazyLock<SkimMatcherV2> =
+    LazyLock::new(|| SkimMatcherV2::default().element_limit(50));
 const LOGO: Asset = asset!("/assets/logo.svg");
 
 fn main() {
@@ -44,13 +47,13 @@ fn App() -> Element {
                         tr {
                             td {
                                 label {
-                                    for: "checkbox-{record.id}",
+                                    r#for: "checkbox-{record.id}",
                                     "{record.values}"
                                 }
                             }
                             td {
                                 input {
-                                    type: "checkbox",
+                                    r#type: "checkbox",
                                     id: "checkbox-{record.id}",
                                     checked: selected_ids().contains(&record.id),
                                     onchange: move |_| {
@@ -79,6 +82,10 @@ fn App() -> Element {
     } else {
         rsx! {""}
     };
+
+    let mut search_debounce = use_debounce(Duration::from_millis(300), move |query: String| {
+        search_results.call(query);
+    });
 
     let generated_url = use_memo(move || {
         const ID_LENGTH: usize = 6;
@@ -116,9 +123,9 @@ fn App() -> Element {
             input {
                 placeholder: "Sök...",
                 oninput: move |e| {
-                    let value = e.value();
-                    search_results.call(value.clone());
-                    search_text.set(value);
+                    let query = e.value();
+                    search_debounce.action(query.clone());
+                    search_text.set(query);
                 }
             }
 
@@ -128,6 +135,11 @@ fn App() -> Element {
                 if selected_ids().is_empty() {
                    i { "Välj kurs och/eller studentgrupp från listan nedan. Använd sökrutan ovan för att filtera listan!" }
                 } else {
+                    div {
+                        id: "generated-url",
+                        span { "🔗" },
+                        code { {generated_url} }
+                    }
                     table {
                         for (i, id) in selected_ids().into_iter().enumerate() {
                             if let Some(selection) = RECORDS.iter().find(|r| r.id == id) {
@@ -143,7 +155,6 @@ fn App() -> Element {
                             }
                         }
                     }
-                    { generated_url }
                 }
             }
 
