@@ -33,7 +33,7 @@ jobs:
           tool: dioxus-cli
 
       - name: build lookuper
-        run: 
+        run: |
           cd objects_lookuper
           cargo run
 
