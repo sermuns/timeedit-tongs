@@ -27,6 +27,8 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
+      - uses: Swatinem/rust-cache@v2
+
       - name: Install dioxus
         uses: taiki-e/install-action@v2
         with:
