@@ -5,14 +5,19 @@ use fuzzy_matcher::skim::SkimMatcherV2;
 use std::fmt::Write;
 use std::sync::LazyLock;
 use std::time::Duration;
+use web_sys::{Clipboard, window};
 
 use types::ObjectRecord;
 
 static RECORDS: LazyLock<Vec<ObjectRecord>> = LazyLock::new(|| {
     wincode::deserialize::<Vec<ObjectRecord>>(include_bytes!("../assets/records.bin")).unwrap()
 });
-static MATCHER: LazyLock<SkimMatcherV2> =
-    LazyLock::new(|| SkimMatcherV2::default().element_limit(50));
+const MATCH_LIMIT: usize = 20;
+static MATCHER: LazyLock<SkimMatcherV2> = LazyLock::new(|| {
+    SkimMatcherV2::default()
+        .element_limit(MATCH_LIMIT)
+        .ignore_case()
+});
 const LOGO: Asset = asset!("/assets/logo.svg");
 
 fn main() {
@@ -25,6 +30,11 @@ fn App() -> Element {
     let mut selected_ids = use_signal(Vec::<u32>::new); // FIXME: should be Vec<&ObjectRecord>, will avoid later crap in rsx
 
     let mut search_results = use_action(|query: String| async move {
+        #[cfg(debug_assertions)]
+        let perf = window().unwrap().performance().unwrap();
+        #[cfg(debug_assertions)]
+        let start = perf.now();
+
         let mut results: Vec<_> = RECORDS
             .iter()
             .filter_map(|r| {
@@ -35,6 +45,11 @@ fn App() -> Element {
             .collect();
 
         results.sort_unstable_by(|a, b| b.0.cmp(&a.0)); // sort by score
+        results.truncate(MATCH_LIMIT);
+
+        #[cfg(debug_assertions)]
+        info!("took {:.3} ms", perf.now() - start);
+
         dioxus::Ok(results.into_iter().map(|(_, r)| r).collect::<Vec<_>>())
     });
 
@@ -83,7 +98,7 @@ fn App() -> Element {
         rsx! {""}
     };
 
-    let mut search_debounce = use_debounce(Duration::from_millis(300), move |query: String| {
+    let mut search_debounce = use_debounce(Duration::from_millis(100), move |query: String| {
         search_results.call(query);
     });
 
@@ -137,8 +152,11 @@ fn App() -> Element {
                 } else {
                     div {
                         id: "generated-url",
-                        span { "🔗" },
                         code { {generated_url} }
+                        button {
+                            "onclick": "navigator.clipboard.writeText(\"{generated_url}\")",
+                            "📋"
+                        }
                     }
                     table {
                         for (i, id) in selected_ids().into_iter().enumerate() {
@@ -165,7 +183,7 @@ fn App() -> Element {
         footer {
             "Skapad av "
             a {
-                href: "https://github.com/sermuns/",
+                href: "https://github.com/sermuns/timeedit-tongs",
                 "Samuel \"sermuns\" Åkesson"
             }
         }

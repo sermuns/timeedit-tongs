@@ -67,17 +67,24 @@ footer {
 	border: var(--line-width) solid var(--line-color);
 	padding: 0.5rem;
 	button {
-		all: unset;
-		color: red;
+		background: none;
+		outline: none;
+		border: none;
 		cursor: pointer;
 	}
 }
 table {
 	width: 100%;
 	border-collapse: collapse;
-	tr:hover {
-		background-color: rgba(0, 0, 0, 0.5);
+	tr {
+		&:nth-child(odd) {
+			background-color: hsl(159, 40%, 9%);
+		}
+		&:hover {
+			background-color: hsl(159, 40%, 7%);
+		}
 	}
+	th,
 	td {
 		> * {
 			padding: 0.5rem;
@@ -87,11 +94,20 @@ table {
 }
 
 #generated-url {
+	padding: 0.2rem;
 	display: flex;
 	gap: 0.5em;
 	border: var(--line-width) solid var(--line-color);
+	justify-content: space-between;
 	span {
 		user-select: none;
+	}
+}
+
+input,
+button {
+	&:active {
+		transform: scale(0.95);
 	}
 }
 
@@ -106,4 +122,8 @@ h1 {
 	align-items: end;
 	margin: 0;
 	margin-bottom: 0.2em;
+}
+
+a {
+	color: hsl(159, 100%, 90%);
 }
