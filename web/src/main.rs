@@ -5,7 +5,7 @@ use fuzzy_matcher::skim::SkimMatcherV2;
 use std::fmt::Write;
 use std::sync::LazyLock;
 use std::time::Duration;
-use web_sys::{Clipboard, window};
+use web_sys::window;
 
 use types::ObjectRecord;
 
