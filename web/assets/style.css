@@ -11,31 +11,90 @@
 }
 
 :root {
-	font-family: "Hanken Grotesk", sans-serif;
-	--background-color: hsl(159, 100%, 5%);
-	--text-color: hsl(159, 40%, 90%);
+	--background-color: hsl(159, 40%, 10%);
+	--text-color: hsl(159, 40%, 95%);
 	--line-width: round(0.1rem, 1px);
 	--line-color: hsl(0, 5%, 30%);
 
 	background-color: var(--background-color);
 	color: var(--text-color);
+
+	font-family: "Hanken Grotesk", sans-serif;
 }
 
 body {
 	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
 	margin: 0;
+	height: 100vh;
+}
+
+input {
+	font-family: inherit;
+	font-size: inherit;
+}
+
+#main {
+	flex: 1;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	/* margin: 0; */
+	padding: 1rem;
+	gap: 1rem;
+	width: min(100%, 60rem);
+	margin: auto;
 }
 
 header {
-	box-sizing: border-box;
-	background-color: hsl(0, 10%, 95%);
-	padding: 1rem;
-	padding-top: 4rem;
+	text-align: center;
 }
 
 main {
-	box-sizing: border-box;
-	width: min(100%, 100ch);
-	margin: auto;
-	padding: 1rem;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+footer {
+	text-align: center;
+}
+
+#selections {
+	display: block;
+	border: var(--line-width) solid var(--line-color);
+	padding: 0.5rem;
+	button {
+		all: unset;
+		color: red;
+		cursor: pointer;
+	}
+}
+table {
+	width: 100%;
+	border-collapse: collapse;
+	tr:hover {
+		background-color: rgba(0, 0, 0, 0.5);
+	}
+	td {
+		> * {
+			padding: 0.5rem;
+			display: block;
+		}
+	}
+}
+
+label,
+input[type="checkbox"] {
+	cursor: pointer;
+}
+
+h1 {
+	display: flex;
+	justify-content: center;
+	align-items: end;
+	margin: 0;
+	margin-bottom: 0.2em;
 }
