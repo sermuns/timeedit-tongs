@@ -1,0 +1,53 @@
+name: Publish
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Release"]
+    types:
+      - completed
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/site.yml
+      - web
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    permissions:
+      id-token: write # to use actions/deploy-pages
+      pages: write # to push to a github pages site
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          lfs: true
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Install dioxus
+        uses: taiki-e/install-action@v2
+        with:
+          tool: dioxus-cli
+
+      - name: build lookuper
+        run: 
+          cd objects_lookuper
+          cargo run
+
+      - name: build final
+        run: |
+          cd web
+          dx bundle --release --out-dir dist
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/dist/public
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
