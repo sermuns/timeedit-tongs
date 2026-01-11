@@ -1,6 +1,3 @@
 [workspace]
 resolver = "3"
-members = [
-		  "objects_lookuper",
-		  "web",
-]
+members = ["objects_lookuper", "types", "web"]
