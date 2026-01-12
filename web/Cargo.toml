@@ -15,3 +15,6 @@ wincode = "0.2.5"
 [features]
 default = ["web"]
 web = ["dioxus/web"]
+
+[build-dependencies]
+vergen = { version = "9.0.6", features = ["build"] }

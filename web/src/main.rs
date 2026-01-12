@@ -143,10 +143,19 @@ fn App(objects: String) -> Element {
         }
 
         footer {
-            "Skapad av "
-            a {
-                href: "https://github.com/sermuns/timeedit-tongs",
-                "Samuel \"sermuns\" Åkesson"
+            span {
+                "Skapad av "
+                a {
+                    href: "https://github.com/sermuns/timeedit-tongs",
+                    "Samuel \"sermuns\" Åkesson"
+                }
+            }
+            span {
+                id: "info",
+                "v"
+                { env!("CARGO_PKG_VERSION") }
+                " | Byggdes "
+                { env!("VERGEN_BUILD_TIMESTAMP") }
             }
         }
     }
