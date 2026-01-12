@@ -14,7 +14,7 @@
 	--background-color: hsl(159, 40%, 10%);
 	--text-color: hsl(159, 40%, 95%);
 	--line-width: round(0.1rem, 1px);
-	--line-color: hsl(0, 5%, 30%);
+	--accent-color: hsl(159, 100%, 90%);
 
 	background-color: var(--background-color);
 	color: var(--text-color);
@@ -23,7 +23,6 @@
 }
 
 body {
-	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
 	margin: 0;
@@ -40,7 +39,6 @@ input {
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
-	/* margin: 0; */
 	padding: 1rem;
 	gap: 1.5rem;
 	width: min(100%, 60rem);
@@ -58,6 +56,12 @@ header {
 	text-align: center;
 }
 
+#search-input-container {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+}
+
 footer {
 	text-align: center;
 }
@@ -65,11 +69,9 @@ footer {
 #selections {
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
-	align-items: center;
+	gap: 0.5rem;
+	align-items: start;
 	min-height: 2em;
-	border: var(--line-width) solid var(--line-color);
-	padding: 0.5rem;
 
 	button {
 		background: none;
@@ -77,7 +79,24 @@ footer {
 		border: none;
 		cursor: pointer;
 	}
+	> * {
+		padding: 0.5rem;
+		border: var(--line-width) solid var(--accent-color);
+	}
+	#generated-url {
+		display: flex;
+		gap: 0.5em;
+		justify-content: space-between;
+		span {
+			user-select: none;
+		}
+	}
 }
+
+code {
+	color: var(--accent-color);
+}
+
 table {
 	width: 100%;
 	border-collapse: collapse;
@@ -100,17 +119,6 @@ table {
 	}
 }
 
-#generated-url {
-	padding: 0.2rem;
-	display: flex;
-	gap: 0.5em;
-	border: var(--line-width) solid var(--line-color);
-	justify-content: space-between;
-	span {
-		user-select: none;
-	}
-}
-
 input[type="checkbox"],
 button {
 	&:active {
@@ -126,7 +134,8 @@ label {
 input[type="text"] {
 	font-size: large;
 	padding: 0.2em 0.5em;
-	background-color: rgba(255, 255, 255, 0.9);
+	background-color: rgba(255, 255, 255, 0.85);
+	flex: 1;
 }
 
 h1 {
@@ -138,5 +147,5 @@ h1 {
 }
 
 a {
-	color: hsl(159, 100%, 90%);
+	color: var(--accent-color);
 }
