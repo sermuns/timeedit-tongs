@@ -7,10 +7,6 @@ edition = "2024"
 dioxus = { version = "0.7.1", features = [] }
 dioxus-sdk = { version = "0.7.0", features = ["time"] }
 fuzzy-matcher = { version = "0.3.7", features = ["compact"] }
-gloo-timers = "0.3.0"
-nucleo-matcher = "0.3.1"
-reqwest = { version = "0.13.1", features = ["json"] }
-serde = { version = "1.0.228", features = ["derive"] }
 
 types = { path = "../types" }
 web-sys = { version = "0.3.83", features = ["Clipboard", "Performance"] }
