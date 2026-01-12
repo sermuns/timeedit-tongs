@@ -22,8 +22,134 @@ static MATCHER: LazyLock<SkimMatcherV2> = LazyLock::new(|| {
 });
 const LOGO: Asset = asset!("/assets/logo.svg");
 
+type ObjectId = u32;
+
 fn main() {
-    dioxus::launch(App);
+    dioxus::launch(|| rsx! { Router::<Route> {} });
+}
+
+#[derive(Routable, Clone, Debug, PartialEq)]
+enum Route {
+    #[route("/?:objects")]
+    App { objects: String },
+}
+
+#[component]
+fn App(objects: String) -> Element {
+    let mut search_text = use_signal(String::new);
+
+    let mut search_results = use_action(|query: String| async move {
+        #[cfg(debug_assertions)]
+        let perf = window().unwrap().performance().unwrap();
+        #[cfg(debug_assertions)]
+        let start = perf.now();
+
+        let mut results: Vec<_> = RECORDS
+            .iter()
+            .filter_map(|r| {
+                MATCHER
+                    .fuzzy_match(&r.values, &query)
+                    .map(|score| (score, r))
+            })
+            .collect();
+
+        results.sort_unstable_by(|a, b| b.0.cmp(&a.0)); // sort by score
+        results.truncate(MATCH_LIMIT);
+
+        #[cfg(debug_assertions)]
+        info!("took {:.0} ms", perf.now() - start);
+
+        dioxus::Ok(results.into_iter().map(|(_, r)| r.clone()).collect())
+    });
+
+    let mut search_debounce = use_debounce(Duration::from_millis(100), move |query: String| {
+        search_results.call(query);
+    });
+
+    let selected_ids: Signal<Vec<ObjectId>> =
+        use_signal(|| objects.split(',').filter_map(|s| s.parse().ok()).collect());
+
+    let generated_url = use_memo(move || {
+        const ID_LENGTH: usize = 6;
+        let ids = selected_ids();
+
+        let mut url = String::with_capacity(128 + ids.len() * ID_LENGTH);
+        url.push_str(
+            "https://cloud.timeedit.net/liu/web/schema/ri.ics?sid=3&p=20250101,20270101&objects=",
+        );
+
+        for (i, id) in ids.iter().enumerate() {
+            if i > 0 {
+                url.push(',');
+            }
+            write!(&mut url, "{id}").unwrap();
+        }
+
+        url
+    });
+
+    use_effect(move || {
+        let objects = selected_ids()
+            .iter()
+            .map(|id| id.to_string())
+            .collect::<Vec<_>>()
+            .join(",");
+
+        #[cfg(debug_assertions)]
+        info!("replaceing query: {:?}", objects);
+
+        navigator().replace(Route::App { objects });
+    });
+
+    rsx! {
+        document::Link { rel: "icon", href: LOGO }
+        document::Link { rel: "stylesheet", href: asset!("/assets/style.css") }
+
+        header {
+            h1 {
+                img { src: LOGO, height: 50 }
+                { env!("CARGO_PKG_NAME") }
+            }
+            i { "för den som hatar TimeEdit..." }
+        }
+
+        main {
+
+            SelectionsContainer {
+                selected_ids,
+                generated_url
+            }
+
+            div {
+                id: "search-input-container",
+                span {"🔎"}
+                input {
+                    r#type: "text",
+                    placeholder: "Sök...",
+                    oninput: move |e| {
+                        let query = e.value();
+                        search_debounce.action(query.clone());
+                        search_text.set(query);
+                    }
+                }
+            }
+
+            SearchResults {
+                search_text,
+                search_results_value: search_results.value(),
+                selected_ids,
+            }
+
+        }
+
+        footer {
+            "Skapad av "
+            a {
+                href: "https://github.com/sermuns/timeedit-tongs",
+                "Samuel \"sermuns\" Åkesson"
+            }
+        }
+    }
 }
 
 #[component]
@@ -119,110 +245,6 @@ fn SelectionsContainer(selected_ids: Signal<Vec<u32>>, generated_url: Memo<Strin
                         }
                     }
                 }
-            }
-        }
-    }
-}
-
-#[component]
-fn App() -> Element {
-    let mut search_text = use_signal(String::new);
-
-    let mut search_results = use_action(|query: String| async move {
-        #[cfg(debug_assertions)]
-        let perf = window().unwrap().performance().unwrap();
-        #[cfg(debug_assertions)]
-        let start = perf.now();
-
-        let mut results: Vec<_> = RECORDS
-            .iter()
-            .filter_map(|r| {
-                MATCHER
-                    .fuzzy_match(&r.values, &query)
-                    .map(|score| (score, r))
-            })
-            .collect();
-
-        results.sort_unstable_by(|a, b| b.0.cmp(&a.0)); // sort by score
-        results.truncate(MATCH_LIMIT);
-
-        #[cfg(debug_assertions)]
-        info!("took {:.0} ms", perf.now() - start);
-
-        dioxus::Ok(results.into_iter().map(|(_, r)| r.clone()).collect())
-    });
-
-    let mut search_debounce = use_debounce(Duration::from_millis(100), move |query: String| {
-        search_results.call(query);
-    });
-
-    let selected_ids = use_signal(Vec::<u32>::new);
-
-    let generated_url = use_memo(move || {
-        const ID_LENGTH: usize = 6;
-        let ids = selected_ids();
-
-        let mut url = String::with_capacity(128 + ids.len() * ID_LENGTH);
-        url.push_str(
-            "https://cloud.timeedit.net/liu/web/schema/ri.ics?sid=3&p=20250101,20270101&objects=",
-        );
-
-        for (i, id) in ids.iter().enumerate() {
-            if i > 0 {
-                url.push(',');
-            }
-            write!(&mut url, "{id}").unwrap();
-        }
-
-        url
-    });
-
-    rsx! {
-        document::Link { rel: "icon", href: LOGO }
-        document::Link { rel: "stylesheet", href: asset!("/assets/style.css") }
-
-        header {
-            h1 {
-                img { src: LOGO, height: 50 }
-                { env!("CARGO_PKG_NAME") }
-            }
-            i { "för den som hatar TimeEdit..." }
-        }
-
-        main {
-
-            SelectionsContainer {
-                selected_ids,
-                generated_url
-            }
-
-            div {
-                id: "search-input-container",
-                span {"🔎"}
-                input {
-                    r#type: "text",
-                    placeholder: "Sök...",
-                    oninput: move |e| {
-                        let query = e.value();
-                        search_debounce.action(query.clone());
-                        search_text.set(query);
-                    }
-                }
-            }
-
-            SearchResults {
-                search_text,
-                search_results_value: search_results.value(),
-                selected_ids,
-            }
-
-        }
-
-        footer {
-            "Skapad av "
-            a {
-                href: "https://github.com/sermuns/timeedit-tongs",
-                "Samuel \"sermuns\" Åkesson"
             }
         }
     }
