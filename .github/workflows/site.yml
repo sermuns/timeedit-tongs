@@ -42,7 +42,7 @@ jobs:
       - name: build final
         run: |
           cd web
-          dx bundle --release --out-dir dist
+          dx bundle --release --debug-symbols=false --out-dir dist
 
       - uses: actions/upload-pages-artifact@v3
         with:
