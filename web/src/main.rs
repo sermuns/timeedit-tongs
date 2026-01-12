@@ -1,10 +1,12 @@
-use dioxus::prelude::*;
+use dioxus::{CapturedError, prelude::*};
 use dioxus_sdk::time::use_debounce;
 use fuzzy_matcher::FuzzyMatcher;
 use fuzzy_matcher::skim::SkimMatcherV2;
 use std::fmt::Write;
 use std::sync::LazyLock;
 use std::time::Duration;
+
+#[cfg(debug_assertions)]
 use web_sys::window;
 
 use types::ObjectRecord;
@@ -25,9 +27,104 @@ fn main() {
 }
 
 #[component]
+fn SearchResults(
+    search_text: Signal<String>,
+    search_results_value: Option<Result<ReadSignal<Vec<ObjectRecord>>, CapturedError>>,
+    selected_ids: Signal<Vec<u32>>,
+) -> Element {
+    if search_text().is_empty() {
+        return rsx! { "" };
+    }
+
+    match search_results_value {
+        Some(Ok(records)) => {
+            let rows = records.iter().map(|record| {
+                let id = record.id;
+
+                rsx! {
+                    tr {
+                        td {
+                            label {
+                                r#for: "checkbox-{id}",
+                                "{record.values}"
+                            }
+                        }
+                        td {
+                            input {
+                                r#type: "checkbox",
+                                id: "checkbox-{id}",
+                                checked: selected_ids().contains(&id),
+                                onchange: move |_| {
+                                    if let Some(pos) = selected_ids().iter().position(|x| *x == id) {
+                                        selected_ids.write().swap_remove(pos);
+                                    } else {
+                                        selected_ids.write().push(id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            rsx! {
+                table {
+                    id: "search-result",
+                    {rows}
+                }
+            }
+        }
+        Some(Err(e)) => rsx! {
+            span {
+                color: "red",
+                "fel: {e}",
+            }
+        },
+        _ => rsx! {
+            div { "..." }
+        },
+    }
+}
+
+#[component]
+fn SelectionsContainer(selected_ids: Signal<Vec<u32>>, generated_url: Memo<String>) -> Element {
+    rsx! {
+        div {
+            id: "selections",
+            if selected_ids().is_empty() {
+               i { "Välj kurs och/eller studentgrupp från listan nedan. Använd sökrutan ovan för att filtera listan!" }
+            } else {
+                div {
+                    id: "generated-url",
+                    code { {generated_url} }
+                    button {
+                        "onclick": "navigator.clipboard.writeText(\"{generated_url}\")",
+                        "📋"
+                    }
+                }
+                table {
+                    for (i, id) in selected_ids().into_iter().enumerate() {
+                        if let Some(selection) = RECORDS.iter().find(|r| r.id == id) {
+                            tr {
+                                td { span { "{selection.values}" } }
+                                td {
+                                    button {
+                                        onclick: move |_| { selected_ids.write().swap_remove(i); },
+                                        "❌"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[component]
 fn App() -> Element {
     let mut search_text = use_signal(String::new);
-    let mut selected_ids = use_signal(Vec::<u32>::new); // FIXME: should be Vec<&ObjectRecord>, will avoid later crap in rsx
 
     let mut search_results = use_action(|query: String| async move {
         #[cfg(debug_assertions)]
@@ -50,57 +147,14 @@ fn App() -> Element {
         #[cfg(debug_assertions)]
         info!("took {:.3} ms", perf.now() - start);
 
-        dioxus::Ok(results.into_iter().map(|(_, r)| r).collect::<Vec<_>>())
+        dioxus::Ok(results.into_iter().map(|(_, r)| r.clone()).collect())
     });
-
-    let search_results_table = if !search_text().is_empty() {
-        match search_results.value() {
-            Some(Ok(records)) => rsx! {
-                table {
-                    id: "search-result",
-                    for record in records() {
-                        tr {
-                            td {
-                                label {
-                                    r#for: "checkbox-{record.id}",
-                                    "{record.values}"
-                                }
-                            }
-                            td {
-                                input {
-                                    r#type: "checkbox",
-                                    id: "checkbox-{record.id}",
-                                    checked: selected_ids().contains(&record.id),
-                                    onchange: move |_| {
-                                        if let Some(pos) = selected_ids().into_iter().position(|id| id == record.id) {
-                                            selected_ids.write().swap_remove(pos);
-                                        } else {
-                                            selected_ids.write().push(record.id);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            Some(Err(e)) => rsx! {
-                span {
-                    color: "red",
-                    "fel: {e}",
-                }
-            },
-            _ => rsx! {
-                div { "..." }
-            },
-        }
-    } else {
-        rsx! {""}
-    };
 
     let mut search_debounce = use_debounce(Duration::from_millis(100), move |query: String| {
         search_results.call(query);
     });
+
+    let selected_ids = use_signal(Vec::<u32>::new);
 
     let generated_url = use_memo(move || {
         const ID_LENGTH: usize = 6;
@@ -144,39 +198,16 @@ fn App() -> Element {
                 }
             }
 
-
-            div {
-                id: "selections",
-                if selected_ids().is_empty() {
-                   i { "Välj kurs och/eller studentgrupp från listan nedan. Använd sökrutan ovan för att filtera listan!" }
-                } else {
-                    div {
-                        id: "generated-url",
-                        code { {generated_url} }
-                        button {
-                            "onclick": "navigator.clipboard.writeText(\"{generated_url}\")",
-                            "📋"
-                        }
-                    }
-                    table {
-                        for (i, id) in selected_ids().into_iter().enumerate() {
-                            if let Some(selection) = RECORDS.iter().find(|r| r.id == id) {
-                                tr {
-                                    td { span { "{selection.values}" } }
-                                    td {
-                                        button {
-                                            onclick: move |_| { selected_ids.write().swap_remove(i); },
-                                            "❌"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            SelectionsContainer {
+                selected_ids,
+                generated_url
             }
 
-            {search_results_table}
+            SearchResults {
+                search_text,
+                search_results_value: search_results.value(),
+                selected_ids,
+            }
 
         }
 
