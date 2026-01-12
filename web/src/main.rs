@@ -190,6 +190,7 @@ fn App() -> Element {
         main {
 
             input {
+                r#type: "text",
                 placeholder: "Sök...",
                 oninput: move |e| {
                     let query = e.value();
