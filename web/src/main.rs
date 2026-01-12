@@ -92,7 +92,9 @@ fn SelectionsContainer(selected_ids: Signal<Vec<u32>>, generated_url: Memo<Strin
         div {
             id: "selections",
             if selected_ids().is_empty() {
-               i { "Välj kurs och/eller studentgrupp från listan nedan. Använd sökrutan ovan för att filtera listan!" }
+               i {
+                    "Sök efter kurs och/eller studentgrupp i sökrutan ovan. Kryssa i vad som ska ingå i din kalenderprenumeration. När du är nöjd, kopiera länken och importera till valfri kalenderapp."
+                }
             } else {
                 div {
                     id: "generated-url",
