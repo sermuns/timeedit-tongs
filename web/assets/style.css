@@ -63,7 +63,12 @@ header {
 }
 
 footer {
+	display: flex;
+	flex-direction: column;
 	text-align: center;
+	#info {
+		font-size: 0.6rem;
+	}
 }
 
 #selections {
