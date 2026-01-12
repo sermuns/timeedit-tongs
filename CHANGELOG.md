@@ -1,5 +1,15 @@
 # Changelog
 
+## [v0.2.1](https://github.com/sermuns/timeedit-tongs/compare/v0.2.0..v0.2.1) - 2026-01-12
+
+### 🎨 Styling
+
+- change description and style by @sermuns in [5c36976](https://github.com/sermuns/timeedit-tongs/commit/5c36976358ba7d99c4b953c39ba6a2edb7b3b802)
+
+### ⚙️ Miscellaneous Tasks
+
+- create changelog by @sermuns in [c3fcee2](https://github.com/sermuns/timeedit-tongs/commit/c3fcee236e94425811eb0157694b47cd30bdfe7d)
+- fix versioning workspace crates, better release workflow by @sermuns in [cf90019](https://github.com/sermuns/timeedit-tongs/commit/cf90019bf3dcddc037719c450f07419c5ec021b7)
 ## [v0.2.0](https://github.com/sermuns/timeedit-tongs/compare/v0.1.1..v0.2.0) - 2026-01-12
 
 ### 🚀 Features
@@ -50,3 +60,4 @@
 - add git cliff and justfile for releasing versions by @sermuns in [8a6935b](https://github.com/sermuns/timeedit-tongs/commit/8a6935b24e755b0dff74779da0eef6f2c0bf79db)
 - release v0.1.1 by @sermuns in [12f8fa5](https://github.com/sermuns/timeedit-tongs/commit/12f8fa5176bda52d69c83d67d41a92d9143e3255)
 - verison bumper by @sermuns in [745363d](https://github.com/sermuns/timeedit-tongs/commit/745363d23d1a9c479f9b1ac0c751075eb42bf803)
+- release v0.2.0 by @sermuns in [ad0ec7c](https://github.com/sermuns/timeedit-tongs/commit/ad0ec7ce393e3f8badfe70f84686834c5aaa9d41)
