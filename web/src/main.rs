@@ -93,7 +93,7 @@ fn SelectionsContainer(selected_ids: Signal<Vec<u32>>, generated_url: Memo<Strin
             id: "selections",
             if selected_ids().is_empty() {
                i {
-                    "Sök efter kurs och/eller studentgrupp i sökrutan ovan. Kryssa i vad som ska ingå i din kalenderprenumeration. När du är nöjd, kopiera länken och importera till valfri kalenderapp."
+                    "Sök efter kurs och/eller studentgrupp i sökrutan, sedan kryssa i vad som ska ingå i din kalenderprenumerationen. När du är nöjd, kopiera länken och importera till valfri kalenderapp."
                 }
             } else {
                 div {
@@ -147,7 +147,7 @@ fn App() -> Element {
         results.truncate(MATCH_LIMIT);
 
         #[cfg(debug_assertions)]
-        info!("took {:.3} ms", perf.now() - start);
+        info!("took {:.0} ms", perf.now() - start);
 
         dioxus::Ok(results.into_iter().map(|(_, r)| r.clone()).collect())
     });
@@ -191,19 +191,23 @@ fn App() -> Element {
 
         main {
 
-            input {
-                r#type: "text",
-                placeholder: "Sök...",
-                oninput: move |e| {
-                    let query = e.value();
-                    search_debounce.action(query.clone());
-                    search_text.set(query);
-                }
-            }
-
             SelectionsContainer {
                 selected_ids,
                 generated_url
+            }
+
+            div {
+                id: "search-input-container",
+                span {"🔎"}
+                input {
+                    r#type: "text",
+                    placeholder: "Sök...",
+                    oninput: move |e| {
+                        let query = e.value();
+                        search_debounce.action(query.clone());
+                        search_text.set(query);
+                    }
+                }
             }
 
             SearchResults {
