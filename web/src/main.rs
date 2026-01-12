@@ -228,7 +228,7 @@ fn SelectionsContainer(selected_ids: Signal<Vec<u32>>, generated_url: Memo<Strin
             id: "selections",
             if selected_ids().is_empty() {
                i {
-                    "Sök efter kurs och/eller studentgrupp i sökrutan, sedan kryssa i vad som ska ingå i din kalenderprenumerationen. När du är nöjd, kopiera länken och importera till valfri kalenderapp."
+                    "Sök efter kurser och/eller studentgrupper i sökrutan. Kryssa sedan i vad som ska ingå i kalenderprenumerationen. När du är nöjd, kopiera länken och importera till valfri kalenderapp."
                 }
             } else {
                 div {

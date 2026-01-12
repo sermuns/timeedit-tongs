@@ -107,7 +107,6 @@ table {
 	border-collapse: collapse;
 	tr {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
 		&:nth-child(odd) {
 			background-color: hsl(159, 40%, 9%);
