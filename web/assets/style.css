@@ -11,7 +11,7 @@
 }
 
 :root {
-	--background-color: hsl(159, 40%, 10%);
+	--background-color: hsl(159, 40%, 11%);
 	--text-color: hsl(159, 40%, 95%);
 	--line-width: round(0.1rem, 1px);
 	--accent-color: hsl(159, 100%, 90%);
@@ -23,10 +23,12 @@
 }
 
 body {
-	display: flex;
 	flex-direction: column;
 	margin: 0;
 	height: 100vh;
+
+	display: flex;
+	flex-direction: column;
 }
 
 input {
@@ -36,24 +38,36 @@ input {
 
 #main {
 	flex: 1;
+
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
-	padding: 1rem;
-	gap: 1.5rem;
+	padding: 1rem 0.5rem;
+	gap: 2rem;
 	width: min(100%, 60rem);
 	margin: auto;
 }
 
 main {
 	flex: 1;
-	display: flex;
-	flex-direction: column;
-	gap: 1.5rem;
+	> div {
+		margin: 1rem 0;
+	}
 }
 
-header {
-	text-align: center;
+nav {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 1rem;
+
+	a {
+		text-decoration: none;
+		&.active {
+			pointer-events: none;
+			text-decoration: underline;
+		}
+	}
 }
 
 #search-input-container {
@@ -103,33 +117,39 @@ code {
 }
 
 table {
-	width: 100%;
+	margin: auto;
+	margin-bottom: 3em;
 	border-collapse: collapse;
+	thead {
+		background-color: rgba(0, 0, 0, 0.2);
+		text-align: left;
+	}
 	tr {
-		display: flex;
-		align-items: center;
 		&:nth-child(odd) {
-			background-color: hsl(159, 40%, 9%);
+			background-color: rgba(0, 0, 0, 0.12);
+		}
+		&:nth-child(even) {
+			background-color: rgba(0, 0, 0, 0.04);
 		}
 		&:hover {
-			background-color: hsl(159, 40%, 7%);
+			background-color: rgba(255, 255, 255, 0.1);
 		}
 	}
-	td {
-		&:first-child {
-			flex: 1;
-		}
+	td,
+	th {
+		padding: 0.5em 1em;
 		> * {
-			padding: 0.5rem;
 			display: block;
 		}
 	}
 }
 
 input[type="checkbox"],
-button {
+button,
+a,
+a > * {
 	&:active {
-		scale: 0.9;
+		transform: translateY(1px);
 	}
 }
 
@@ -153,6 +173,41 @@ h1 {
 	margin-bottom: 0.2em;
 }
 
+h2 {
+	margin-top: 2em;
+	margin-bottom: 0.5em;
+}
+
+p {
+	margin-top: 0.5em;
+}
+
 a {
 	color: var(--accent-color);
+	&:hover {
+		filter: brightness(1.2);
+	}
+	&[target="_blank"]::after {
+		content: "⮺";
+		color: var(--text-color);
+		font-size: 1.5em;
+		margin-left: 0.1em;
+		display: inline-block;
+	}
+}
+
+.block-link {
+	text-decoration: none;
+}
+
+.box,
+.block-link {
+	display: block;
+	padding: 0.5rem;
+	margin: 1em 0;
+	border: var(--line-width) solid var(--accent-color);
+	h3,
+	p {
+		margin: 0;
+	}
 }

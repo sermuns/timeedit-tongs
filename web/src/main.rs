@@ -1,152 +1,67 @@
-use dioxus::{CapturedError, prelude::*};
-use dioxus_sdk::time::use_debounce;
-use fuzzy_matcher::FuzzyMatcher;
-use fuzzy_matcher::skim::SkimMatcherV2;
-use std::fmt::Write;
-use std::sync::LazyLock;
-use std::time::Duration;
+use std::mem::discriminant;
 
-#[cfg(debug_assertions)]
-use web_sys::window;
+use dioxus::prelude::*;
 
-use types::ObjectRecord;
+mod constants;
+mod pages;
 
-static RECORDS: LazyLock<Vec<ObjectRecord>> = LazyLock::new(|| {
-    wincode::deserialize::<Vec<ObjectRecord>>(include_bytes!("../assets/records.bin")).unwrap()
-});
-const MATCH_LIMIT: usize = 20;
-static MATCHER: LazyLock<SkimMatcherV2> = LazyLock::new(|| {
-    SkimMatcherV2::default()
-        .element_limit(MATCH_LIMIT)
-        .ignore_case()
-});
-const LOGO: Asset = asset!("/assets/logo.svg");
-
-type ObjectId = u32;
+use crate::constants::*;
+use crate::pages::Home;
+use crate::pages::Ics;
+use crate::pages::Un;
 
 fn main() {
-    dioxus::launch(|| rsx! { Router::<Route> {} });
+    dioxus::launch(|| {
+        rsx! { Router::<Route> {} }
+    });
 }
 
-#[derive(Routable, Clone, Debug, PartialEq)]
-enum Route {
-    #[route("/?:objects")]
-    App { objects: String },
+#[derive(Routable, Clone, PartialEq)]
+#[rustfmt::skip]
+pub enum Route {
+    #[layout(BaseLayout)]
+
+        #[route("/")]
+        Home,
+
+        #[route("/ics?:objects")]
+        Ics { objects: String },
+
+        #[route("/un?:object")]
+        Un { object: Option<ObjectId> },
+
+        #[route("/:..route")]
+        NotFound {
+            route: Vec<String>,
+        },
 }
 
 #[component]
-fn App(objects: String) -> Element {
-    let mut search_text = use_signal(String::new);
-
-    let mut search_results = use_action(|query: String| async move {
-        #[cfg(debug_assertions)]
-        let perf = window().unwrap().performance().unwrap();
-        #[cfg(debug_assertions)]
-        let start = perf.now();
-
-        let mut results: Vec<_> = RECORDS
-            .iter()
-            .filter_map(|r| {
-                MATCHER
-                    .fuzzy_match(&r.values, &query)
-                    .map(|score| (score, r))
-            })
-            .collect();
-
-        results.sort_unstable_by(|a, b| b.0.cmp(&a.0)); // sort by score
-        results.truncate(MATCH_LIMIT);
-
-        #[cfg(debug_assertions)]
-        info!("took {:.0} ms", perf.now() - start);
-
-        dioxus::Ok(results.into_iter().map(|(_, r)| r.clone()).collect())
-    });
-
-    let mut search_debounce = use_debounce(Duration::from_millis(100), move |query: String| {
-        search_results.call(query);
-    });
-
-    let selected_ids: Signal<Vec<ObjectId>> =
-        use_signal(|| objects.split(',').filter_map(|s| s.parse().ok()).collect());
-
-    let generated_url = use_memo(move || {
-        const ID_LENGTH: usize = 6;
-        let ids = selected_ids();
-
-        let mut url = String::with_capacity(128 + ids.len() * ID_LENGTH);
-        url.push_str(
-            "https://cloud.timeedit.net/liu/web/schema/ri.ics?sid=3&p=20250101,20270101&objects=",
-        );
-
-        for (i, id) in ids.iter().enumerate() {
-            if i > 0 {
-                url.push(',');
-            }
-            write!(&mut url, "{id}").unwrap();
-        }
-
-        url
-    });
-
-    use_effect(move || {
-        let objects = selected_ids()
-            .iter()
-            .map(|id| id.to_string())
-            .collect::<Vec<_>>()
-            .join(",");
-
-        #[cfg(debug_assertions)]
-        info!("replaceing query: {:?}", objects);
-
-        navigator().replace(Route::App { objects });
-    });
-
+fn BaseLayout() -> Element {
     rsx! {
         document::Link { rel: "icon", href: LOGO }
-        document::Link { rel: "stylesheet", href: asset!("/assets/style.css") }
+        Stylesheet { href: asset!("/assets/style.css") }
 
         header {
             h1 {
                 img { src: LOGO, height: 50 }
-                { env!("CARGO_PKG_NAME") }
+                { PKG_NAME }
             }
-            i { "för den som hatar TimeEdit..." }
+            nav {
+                NavBarLink { to: Route::Home }
+                NavBarLink { to: Route::Ics { objects: String::new() } }
+                NavBarLink { to: Route::Un { object: None } }
+            }
         }
 
-        main {
-
-            SelectionsContainer {
-                selected_ids,
-                generated_url
-            }
-
-            div {
-                id: "search-input-container",
-                span {"🔎"}
-                input {
-                    r#type: "text",
-                    placeholder: "Sök...",
-                    oninput: move |e| {
-                        let query = e.value();
-                        search_debounce.action(query.clone());
-                        search_text.set(query);
-                    }
-                }
-            }
-
-            SearchResults {
-                search_text,
-                search_results_value: search_results.value(),
-                selected_ids,
-            }
-
-        }
+        main { Outlet::<Route> {} }
 
         footer {
             span {
                 "Skapad av "
                 a {
                     href: "https://github.com/sermuns/timeedit-tongs",
+                    target: "_blank",
                     "Samuel \"sermuns\" Åkesson"
                 }
             }
@@ -154,7 +69,7 @@ fn App(objects: String) -> Element {
                 id: "info",
                 "v"
                 { env!("CARGO_PKG_VERSION") }
-                " | Byggdes "
+                " | "
                 { env!("VERGEN_BUILD_TIMESTAMP") }
             }
         }
@@ -162,99 +77,38 @@ fn App(objects: String) -> Element {
 }
 
 #[component]
-fn SearchResults(
-    search_text: Signal<String>,
-    search_results_value: Option<Result<ReadSignal<Vec<ObjectRecord>>, CapturedError>>,
-    selected_ids: Signal<Vec<u32>>,
-) -> Element {
-    if search_text().is_empty() {
-        return rsx! { "" };
-    }
+fn NavBarLink(to: Route) -> Element {
+    let current_route = use_route::<Route>();
 
-    match search_results_value {
-        Some(Ok(records)) => {
-            let rows = records.iter().map(|record| {
-                let id = record.id;
+    // WARNING:  FUCKING HACKKK!! this might break shit with nested routes?
+    let class = if discriminant(&current_route) == discriminant(&to) {
+        "active"
+    } else {
+        ""
+    };
 
-                rsx! {
-                    tr {
-                        td {
-                            label {
-                                r#for: "checkbox-{id}",
-                                "{record.values}"
-                            }
-                        }
-                        td {
-                            input {
-                                r#type: "checkbox",
-                                id: "checkbox-{id}",
-                                checked: selected_ids().contains(&id),
-                                onchange: move |_| {
-                                    if let Some(pos) = selected_ids().iter().position(|x| *x == id) {
-                                        selected_ids.write().swap_remove(pos);
-                                    } else {
-                                        selected_ids.write().push(id);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+    let text = match to {
+        Route::Home => HOME_ROUTE_STR,
+        Route::Ics { .. } => ICS_ROUTE_STR,
+        Route::Un { .. } => UN_ROUTE_STR,
+        _ => "",
+    };
 
-            rsx! {
-                table {
-                    id: "search-result",
-                    {rows}
-                }
-            }
-        }
-        Some(Err(e)) => rsx! {
-            span {
-                color: "red",
-                "fel: {e}",
-            }
-        },
-        _ => rsx! {
-            div { "..." }
-        },
+    rsx! {
+        Link { to, class, {text} }
     }
 }
 
 #[component]
-fn SelectionsContainer(selected_ids: Signal<Vec<u32>>, generated_url: Memo<String>) -> Element {
+fn NotFound(route: Vec<String>) -> Element {
     rsx! {
-        div {
-            id: "selections",
-            if selected_ids().is_empty() {
-               i {
-                    "Sök efter kurser och/eller studentgrupper i sökrutan. Kryssa sedan i vad som ska ingå i kalenderprenumerationen. När du är nöjd, kopiera länken och importera till valfri kalenderapp."
-                }
-            } else {
-                div {
-                    id: "generated-url",
-                    code { {generated_url} }
-                    button {
-                        "onclick": "navigator.clipboard.writeText(\"{generated_url}\")",
-                        "📋"
-                    }
-                }
-                table {
-                    for (i, id) in selected_ids().into_iter().enumerate() {
-                        if let Some(selection) = RECORDS.iter().find(|r| r.id == id) {
-                            tr {
-                                td { span { "{selection.values}" } }
-                                td {
-                                    button {
-                                        onclick: move |_| { selected_ids.write().swap_remove(i); },
-                                        "❌"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        document::Title { "Sidan hittades inte | {PKG_NAME}" }
+
+        h1 { "404 - Sidan hittades inte" }
+        p { "'/{route:?}' kunde inte hittas." }
+        Link {
+            to: Route::Home,
+            "Tillbaka till startsidan"
         }
     }
 }

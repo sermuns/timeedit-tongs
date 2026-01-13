@@ -2,11 +2,18 @@
 name = "timeedit-tongs"
 version.workspace = true
 edition.workspace = true
+repository.workspace = true
 
 [dependencies]
+anyhow = "1.0.100"
+chrono = { version = "0.4.42", features = ["serde"] }
+chrono-tz = { version = "0.10.4" }
 dioxus = { version = "0.7.1", features = ["router"] }
 dioxus-sdk = { version = "0.7.0", features = ["time"] }
 fuzzy-matcher = { version = "0.3.7", features = ["compact"] }
+fxhash = "0.2.1"
+reqwest = { version = "0.13.1", features = ["json"] }
+serde = { version = "1.0.228", features = ["derive"], default-features = false }
 
 types = { path = "../types" }
 web-sys = { version = "0.3.83", features = ["Clipboard", "Performance"] }

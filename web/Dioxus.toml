@@ -1,11 +1,5 @@
 [application]
+asset_dir = "static"
 
-[web.app]
-title = "timeedit-tongs"
-
-[web.resource]
-style = []
-script = []
-
-[web.resource.dev]
-script = []
+[web]
+debug = false

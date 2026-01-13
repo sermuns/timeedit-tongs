@@ -8,7 +8,7 @@ pub struct ObjectSearchResponse {
     pub records: Vec<ObjectRecord>,
 }
 
-#[derive(Deserialize, Debug, SchemaWrite, SchemaRead, Clone)]
+#[derive(Deserialize, Debug, SchemaWrite, SchemaRead, Clone, PartialEq)]
 pub struct ObjectRecord {
     pub id: u32,
     pub values: String,
@@ -16,7 +16,7 @@ pub struct ObjectRecord {
     pub r#type: ObjectType,
 }
 
-#[derive(Deserialize_repr, Debug, SchemaWrite, SchemaRead, Clone)]
+#[derive(Deserialize_repr, Debug, SchemaWrite, SchemaRead, Clone, PartialEq)]
 #[repr(i32)]
 pub enum ObjectType {
     StudentGroup = 205,
