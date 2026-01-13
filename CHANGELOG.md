@@ -1,10 +1,20 @@
 # Changelog
 
+## [v0.3.1](https://github.com/sermuns/timeedit-tongs/compare/v0.3.0..v0.3.1) - 2026-01-13
+
+### ⚙️ Miscellaneous Tasks
+
+- change push recipe by @sermuns in [e2a02f7](https://github.com/sermuns/timeedit-tongs/commit/e2a02f729ec902af95c78e5ebf044e08fe8fe021)
+- use index.thml as 404 page by @sermuns in [20790b7](https://github.com/sermuns/timeedit-tongs/commit/20790b72b1ca0ed25ac8b428d158915d714ae89b)
 ## [v0.3.0](https://github.com/sermuns/timeedit-tongs/compare/v0.2.2..v0.3.0) - 2026-01-13
 
 ### 🚀 Features
 
 - major changes by @sermuns in [bfde5fd](https://github.com/sermuns/timeedit-tongs/commit/bfde5fd1b7e4721fd78e5397ac98319d7c59cf38)
+
+### ⚙️ Miscellaneous Tasks
+
+- release v0.3.0 by @sermuns in [a73e0de](https://github.com/sermuns/timeedit-tongs/commit/a73e0de572e2ac841d9579615fa9c8dc420b2769)
 ## [v0.2.2](https://github.com/sermuns/timeedit-tongs/compare/v0.2.1..v0.2.2) - 2026-01-13
 
 ### 🐛 Bug Fixes
