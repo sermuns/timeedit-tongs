@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.3.0](https://github.com/sermuns/timeedit-tongs/compare/v0.2.2..v0.3.0) - 2026-01-13
+
+### 🚀 Features
+
+- major changes by @sermuns in [bfde5fd](https://github.com/sermuns/timeedit-tongs/commit/bfde5fd1b7e4721fd78e5397ac98319d7c59cf38)
 ## [v0.2.2](https://github.com/sermuns/timeedit-tongs/compare/v0.2.1..v0.2.2) - 2026-01-13
 
 ### 🐛 Bug Fixes
@@ -10,6 +15,7 @@
 
 - better justfile by @sermuns in [3efe2b6](https://github.com/sermuns/timeedit-tongs/commit/3efe2b65fe0908b96440789ad2e6520a561e9337)
 - remove lockfile.. by @sermuns in [171b48c](https://github.com/sermuns/timeedit-tongs/commit/171b48cdc15843073e4a4ad31e90076e1151f1a7)
+- release v0.2.2 by @sermuns in [54f087d](https://github.com/sermuns/timeedit-tongs/commit/54f087df1536154055b56c850c1b26ecd89fdf5b)
 ## [v0.2.1](https://github.com/sermuns/timeedit-tongs/compare/v0.2.0..v0.2.1) - 2026-01-12
 
 ### 🎨 Styling
