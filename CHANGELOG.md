@@ -1,5 +1,15 @@
 # Changelog
 
+## [v0.2.2](https://github.com/sermuns/timeedit-tongs/compare/v0.2.1..v0.2.2) - 2026-01-13
+
+### 🐛 Bug Fixes
+
+- make first columns maxiomal by @sermuns in [30cc597](https://github.com/sermuns/timeedit-tongs/commit/30cc59726de7e55616adfb7b6840f4407b880230)
+
+### ⚙️ Miscellaneous Tasks
+
+- better justfile by @sermuns in [3efe2b6](https://github.com/sermuns/timeedit-tongs/commit/3efe2b65fe0908b96440789ad2e6520a561e9337)
+- remove lockfile.. by @sermuns in [171b48c](https://github.com/sermuns/timeedit-tongs/commit/171b48cdc15843073e4a4ad31e90076e1151f1a7)
 ## [v0.2.1](https://github.com/sermuns/timeedit-tongs/compare/v0.2.0..v0.2.1) - 2026-01-12
 
 ### 🎨 Styling
@@ -10,6 +20,7 @@
 
 - create changelog by @sermuns in [c3fcee2](https://github.com/sermuns/timeedit-tongs/commit/c3fcee236e94425811eb0157694b47cd30bdfe7d)
 - fix versioning workspace crates, better release workflow by @sermuns in [cf90019](https://github.com/sermuns/timeedit-tongs/commit/cf90019bf3dcddc037719c450f07419c5ec021b7)
+- release v0.2.1 by @sermuns in [8b999ab](https://github.com/sermuns/timeedit-tongs/commit/8b999ab4cbc11b0fd92a7afed8173d39b1592d15)
 ## [v0.2.0](https://github.com/sermuns/timeedit-tongs/compare/v0.1.1..v0.2.0) - 2026-01-12
 
 ### 🚀 Features
