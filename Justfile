@@ -9,6 +9,5 @@ new-version:
 	git tag -f v$VERSION
 
 push:
-	git push &
-	git push --tags &
-	wait
+	git push
+	git push --tags
