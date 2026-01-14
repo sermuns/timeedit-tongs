@@ -1,14 +1,11 @@
-use std::mem::discriminant;
-
 use dioxus::prelude::*;
+use std::mem::discriminant;
 
 mod constants;
 mod pages;
 
 use crate::constants::*;
-use crate::pages::Home;
-use crate::pages::Ics;
-use crate::pages::Un;
+use crate::pages::*;
 
 fn main() {
     dioxus::launch(|| {
@@ -29,6 +26,9 @@ pub enum Route {
 
         #[route("/un?:object")]
         Un { object: Option<ObjectId> },
+        
+        #[route("/ledigt")]
+        Obokat,
 
         #[route("/:..route")]
         NotFound {
@@ -51,6 +51,7 @@ fn BaseLayout() -> Element {
                 NavBarLink { to: Route::Home }
                 NavBarLink { to: Route::Ics { objects: String::new() } }
                 NavBarLink { to: Route::Un { object: None } }
+                NavBarLink { to: Route::Obokat }
             }
         }
 
@@ -78,10 +79,8 @@ fn BaseLayout() -> Element {
 
 #[component]
 fn NavBarLink(to: Route) -> Element {
-    let current_route = use_route::<Route>();
-
     // WARNING:  FUCKING HACKKK!! this might break shit with nested routes?
-    let class = if discriminant(&current_route) == discriminant(&to) {
+    let class = if discriminant(&use_route::<Route>()) == discriminant(&to) {
         "active"
     } else {
         ""
@@ -91,11 +90,16 @@ fn NavBarLink(to: Route) -> Element {
         Route::Home => HOME_ROUTE_STR,
         Route::Ics { .. } => ICS_ROUTE_STR,
         Route::Un { .. } => UN_ROUTE_STR,
-        _ => "",
+        Route::Obokat => OBOKAT_ROUTE_STR,
+        Route::NotFound { .. } => "404",
     };
 
     rsx! {
-        Link { to, class, {text} }
+        Link {
+            to,
+            class,
+            {text}
+        }
     }
 }
 

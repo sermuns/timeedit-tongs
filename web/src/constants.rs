@@ -22,3 +22,4 @@ pub const PKG_REPOSITORY: &str = env!("CARGO_PKG_REPOSITORY");
 pub const HOME_ROUTE_STR: &str = "Hem";
 pub const ICS_ROUTE_STR: &str = "Smörgåsbord";
 pub const UN_ROUTE_STR: &str = "Undervisningsnummer";
+pub const OBOKAT_ROUTE_STR: &str = "Obokat";

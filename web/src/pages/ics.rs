@@ -77,7 +77,7 @@ pub fn Ics(objects: String) -> Element {
     });
 
     rsx! {
-        document::Title { "Prenumerationslänk | {PKG_NAME}" }
+        document::Title { "{ICS_ROUTE_STR} | {PKG_NAME}" }
 
         SelectionsContainer {
             selected_ids,

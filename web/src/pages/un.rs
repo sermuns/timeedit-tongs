@@ -1,73 +1,15 @@
-use chrono::{DateTime, Datelike, Locale, NaiveDateTime, Utc};
-use chrono::{NaiveDate, NaiveTime, TimeZone};
-use chrono_tz::Tz;
+use chrono::Utc;
 use dioxus::CapturedError;
 use dioxus::prelude::*;
 use dioxus_sdk::time::use_debounce;
 use fuzzy_matcher::FuzzyMatcher;
 use fxhash::FxHashMap;
-use serde::Deserialize;
 use std::time::Duration;
 
-use types::ObjectRecord;
+use types::{CalendarResponse, ObjectRecord, Reservation};
 
 use crate::Route;
 use crate::constants::*;
-
-#[derive(Debug, Deserialize)]
-struct CalendarResponse {
-    reservations: Vec<Reservation>,
-}
-
-#[derive(Debug, Deserialize)]
-struct Reservation {
-    id: String,
-    startdate: NaiveDate,
-    starttime: NaiveTime,
-    enddate: NaiveDate,
-    endtime: NaiveTime,
-    columns: [String; 9],
-}
-impl Reservation {
-    // TODO: https://crates.io/crates/chrono-tz#user-content-limiting-the-timezone-table-to-zones-of-interest
-
-    // NOTE: hardcoded Stockholm timezone because i think TimeEdit API is in that??
-    const TIME_ZONE: Tz = chrono_tz::Europe::Stockholm;
-    const LOCALE: Locale = chrono::Locale::sv_SE;
-
-    fn start_utc(&self) -> DateTime<Utc> {
-        let naive = NaiveDateTime::new(self.startdate, self.starttime);
-
-        Self::TIME_ZONE
-            .from_local_datetime(&naive)
-            .unwrap()
-            .with_timezone(&Utc)
-    }
-
-    fn end_utc(&self) -> DateTime<Utc> {
-        let naive = NaiveDateTime::new(self.enddate, self.endtime);
-
-        Self::TIME_ZONE
-            .from_local_datetime(&naive)
-            .unwrap()
-            .with_timezone(&Utc)
-    }
-
-    fn link(&self) -> String {
-        format!(
-            "https://cloud.timeedit.net/liu/web/schema/ri.html?sid=3&id={}",
-            self.id
-        )
-    }
-
-    fn start_localized_format(&self) -> String {
-        format!(
-            "{} | {}",
-            self.startdate.format_localized("%a %d %b %Y", Self::LOCALE),
-            self.starttime.format("kl %H:%M")
-        )
-    }
-}
 
 #[component]
 pub fn Un(object: ReadSignal<Option<ObjectId>>) -> Element {

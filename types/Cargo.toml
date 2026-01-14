@@ -4,6 +4,8 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
+chrono = { version = "0.4.42", features = ["serde", "unstable-locales"] }
+chrono-tz = "0.10.4"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_repr = "0.1.20"
 wincode = { version = "0.2.5", features = ["derive"] }

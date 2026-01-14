@@ -24,6 +24,13 @@ pub fn Home() -> Element {
             p { "Räkna antal föreläsningar, lektioner, etc. som har passerat i en kurs." }
         }
 
+        Link {
+            to: Route::Obokat,
+            class: "block-link",
+            h3 { "🟢 " {OBOKAT_ROUTE_STR} }
+            p { "Se vilka salar på campus som står obokade JUST NU. Smidigt om man bara vill sitta någonstans i 45 minuter utan att boka." }
+        }
+
         h2 { "Om denna sida" }
 
         p {
