@@ -1,47 +1,22 @@
 use dioxus::CapturedError;
 use dioxus::prelude::*;
 use dioxus_sdk::time::use_debounce;
-use fuzzy_matcher::FuzzyMatcher;
 use std::fmt::Write;
 use std::time::Duration;
-#[cfg(debug_assertions)]
-use web_sys::window;
-
-use types::ObjectRecord;
 
 use crate::Route;
 use crate::constants::*;
+use crate::search::fuzzy_search_object_records;
 
 #[component]
 pub fn Ics(objects: String) -> Element {
     let mut search_text = use_signal(String::new);
 
-    let mut search_results = use_action(|query: String| async move {
-        #[cfg(debug_assertions)]
-        let perf = window().unwrap().performance().unwrap();
-        #[cfg(debug_assertions)]
-        let start = perf.now();
-
-        let mut results: Vec<_> = RECORDS
-            .iter()
-            .filter_map(|r| {
-                MATCHER
-                    .fuzzy_match(&r.values, &query)
-                    .map(|score| (score, r))
-            })
-            .collect();
-
-        results.sort_unstable_by(|a, b| b.0.cmp(&a.0)); // sort by score
-        results.truncate(MATCH_LIMIT);
-
-        #[cfg(debug_assertions)]
-        info!("took {:.0} ms", perf.now() - start);
-
-        dioxus::Ok(results.into_iter().map(|(_, r)| r.clone()).collect())
-    });
+    let mut search_result_indices =
+        use_action(|query: String| async move { fuzzy_search_object_records(&query) });
 
     let mut search_debounce = use_debounce(Duration::from_millis(100), move |query: String| {
-        search_results.call(query);
+        search_result_indices.call(query);
     });
 
     let selected_ids: Signal<Vec<ObjectId>> =
@@ -77,7 +52,7 @@ pub fn Ics(objects: String) -> Element {
     });
 
     rsx! {
-        document::Title { "Prenumerationslänk | {PKG_NAME}" }
+        document::Title { "{ICS_ROUTE_STR} | {PKG_NAME}" }
 
         SelectionsContainer {
             selected_ids,
@@ -100,7 +75,7 @@ pub fn Ics(objects: String) -> Element {
 
         SearchResults {
             search_text,
-            search_results_value: search_results.value(),
+            object_indices: search_result_indices.value(),
             selected_ids,
         }
 
@@ -110,16 +85,17 @@ pub fn Ics(objects: String) -> Element {
 #[component]
 fn SearchResults(
     search_text: Signal<String>,
-    search_results_value: Option<Result<ReadSignal<Vec<ObjectRecord>>, CapturedError>>,
+    object_indices: Option<Result<ReadSignal<Vec<usize>>, CapturedError>>,
     selected_ids: Signal<Vec<u32>>,
 ) -> Element {
     if search_text().is_empty() {
         return rsx! { "" };
     }
 
-    match search_results_value {
-        Some(Ok(records)) => {
-            let rows = records.iter().map(|record| {
+    match object_indices {
+        Some(Ok(indices)) => {
+            let rows = indices.iter().map(|idx| {
+                let record = &OBJECT_RECORDS[*idx];
                 let id = record.id;
 
                 rsx! {
@@ -190,7 +166,7 @@ fn SelectionsContainer(selected_ids: Signal<Vec<u32>>, generated_url: Memo<Strin
             }
             table {
                 for (i, id) in selected_ids().into_iter().enumerate() {
-                    if let Some(selection) = RECORDS.iter().find(|r| r.id == id) {
+                    if let Some(selection) = OBJECT_RECORDS.iter().find(|r| r.id == id) {
                         tr {
                             td { span { "{selection.values}" } }
                             td {

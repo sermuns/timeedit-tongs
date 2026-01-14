@@ -9,7 +9,8 @@ anyhow = "1.0.100"
 chrono = { version = "0.4.42", features = ["alloc", "serde", "unstable-locales"] }
 chrono-tz = { version = "0.10.4" }
 dioxus = { version = "0.7.3", features = ["router"] }
-dioxus-sdk = { version = "0.7.0", features = ["time"] }
+dioxus-sdk = { version = "0.7", features = ["time"] }
+futures = "0.3.31"
 fuzzy-matcher = { version = "0.3.7", features = ["compact"] }
 fxhash = "0.2.1"
 reqwest = { version = "0.13.1", features = ["json"] }

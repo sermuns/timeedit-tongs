@@ -1,19 +1,15 @@
-use std::mem::discriminant;
-
 use dioxus::prelude::*;
+use std::mem::discriminant;
 
 mod constants;
 mod pages;
+mod search;
 
 use crate::constants::*;
-use crate::pages::Home;
-use crate::pages::Ics;
-use crate::pages::Un;
+use crate::pages::*;
 
 fn main() {
-    dioxus::launch(|| {
-        rsx! { Router::<Route> {} }
-    });
+    dioxus::launch(|| rsx! { Router::<Route> {} });
 }
 
 #[derive(Routable, Clone, PartialEq)]
@@ -29,6 +25,9 @@ pub enum Route {
 
         #[route("/un?:object")]
         Un { object: Option<ObjectId> },
+        
+        #[route("/obokat")]
+        Obokat,
 
         #[route("/:..route")]
         NotFound {
@@ -39,18 +38,19 @@ pub enum Route {
 #[component]
 fn BaseLayout() -> Element {
     rsx! {
-        document::Link { rel: "icon", href: LOGO }
+        document::Link { rel: "icon", href: LOGO_ICO }
         Stylesheet { href: asset!("/assets/style.css") }
 
         header {
             h1 {
-                img { src: LOGO, height: 50 }
+                img { src: LOGO_SVG, height: 50 }
                 { PKG_NAME }
             }
             nav {
                 NavBarLink { to: Route::Home }
                 NavBarLink { to: Route::Ics { objects: String::new() } }
                 NavBarLink { to: Route::Un { object: None } }
+                NavBarLink { to: Route::Obokat }
             }
         }
 
@@ -78,10 +78,8 @@ fn BaseLayout() -> Element {
 
 #[component]
 fn NavBarLink(to: Route) -> Element {
-    let current_route = use_route::<Route>();
-
     // WARNING:  FUCKING HACKKK!! this might break shit with nested routes?
-    let class = if discriminant(&current_route) == discriminant(&to) {
+    let class = if discriminant(&use_route::<Route>()) == discriminant(&to) {
         "active"
     } else {
         ""
@@ -91,11 +89,16 @@ fn NavBarLink(to: Route) -> Element {
         Route::Home => HOME_ROUTE_STR,
         Route::Ics { .. } => ICS_ROUTE_STR,
         Route::Un { .. } => UN_ROUTE_STR,
-        _ => "",
+        Route::Obokat => OBOKAT_ROUTE_STR,
+        Route::NotFound { .. } => "404",
     };
 
     rsx! {
-        Link { to, class, {text} }
+        Link {
+            to,
+            class,
+            {text}
+        }
     }
 }
 
@@ -105,10 +108,10 @@ fn NotFound(route: Vec<String>) -> Element {
         document::Title { "Sidan hittades inte | {PKG_NAME}" }
 
         h1 { "404 - Sidan hittades inte" }
-        p { "'/{route:?}' kunde inte hittas." }
+        p { "/{route:?} kunde inte hittas." }
         Link {
             to: Route::Home,
-            "Tillbaka till startsidan"
+            "Tillbaka till startsida"
         }
     }
 }

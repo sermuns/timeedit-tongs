@@ -1,93 +1,22 @@
-use chrono::{DateTime, Datelike, Locale, NaiveDateTime, Utc};
-use chrono::{NaiveDate, NaiveTime, TimeZone};
-use chrono_tz::Tz;
+use chrono::Utc;
 use dioxus::CapturedError;
 use dioxus::prelude::*;
 use dioxus_sdk::time::use_debounce;
-use fuzzy_matcher::FuzzyMatcher;
 use fxhash::FxHashMap;
-use serde::Deserialize;
 use std::time::Duration;
 
-use types::ObjectRecord;
+use types::{CalendarResponse, Reservation};
 
 use crate::Route;
 use crate::constants::*;
-
-#[derive(Debug, Deserialize)]
-struct CalendarResponse {
-    reservations: Vec<Reservation>,
-}
-
-#[derive(Debug, Deserialize)]
-struct Reservation {
-    id: String,
-    startdate: NaiveDate,
-    starttime: NaiveTime,
-    enddate: NaiveDate,
-    endtime: NaiveTime,
-    columns: [String; 9],
-}
-impl Reservation {
-    // TODO: https://crates.io/crates/chrono-tz#user-content-limiting-the-timezone-table-to-zones-of-interest
-
-    // NOTE: hardcoded Stockholm timezone because i think TimeEdit API is in that??
-    const TIME_ZONE: Tz = chrono_tz::Europe::Stockholm;
-    const LOCALE: Locale = chrono::Locale::sv_SE;
-
-    fn start_utc(&self) -> DateTime<Utc> {
-        let naive = NaiveDateTime::new(self.startdate, self.starttime);
-
-        Self::TIME_ZONE
-            .from_local_datetime(&naive)
-            .unwrap()
-            .with_timezone(&Utc)
-    }
-
-    fn end_utc(&self) -> DateTime<Utc> {
-        let naive = NaiveDateTime::new(self.enddate, self.endtime);
-
-        Self::TIME_ZONE
-            .from_local_datetime(&naive)
-            .unwrap()
-            .with_timezone(&Utc)
-    }
-
-    fn link(&self) -> String {
-        format!(
-            "https://cloud.timeedit.net/liu/web/schema/ri.html?sid=3&id={}",
-            self.id
-        )
-    }
-
-    fn start_localized_format(&self) -> String {
-        format!(
-            "{} | {}",
-            self.startdate.format_localized("%a %d %b %Y", Self::LOCALE),
-            self.starttime.format("kl %H:%M")
-        )
-    }
-}
+use crate::search::fuzzy_search_object_records;
 
 #[component]
 pub fn Un(object: ReadSignal<Option<ObjectId>>) -> Element {
     let mut search_text = use_signal(String::new);
 
-    let mut search_results = use_action(|query: String| async move {
-        let mut results: Vec<_> = RECORDS
-            .iter()
-            .filter_map(|r| {
-                MATCHER
-                    .fuzzy_match(&r.values, &query)
-                    .map(|score| (score, r))
-            })
-            .collect();
-
-        results.sort_unstable_by(|a, b| b.0.cmp(&a.0)); // sort by score
-        results.truncate(MATCH_LIMIT);
-
-        dioxus::Ok(results.into_iter().map(|(_, r)| r.clone()).collect())
-    });
+    let mut search_results =
+        use_action(|query: String| async move { fuzzy_search_object_records(&query) });
 
     let mut search_debounce = use_debounce(Duration::from_millis(100), move |query| {
         search_results.call(query);
@@ -95,7 +24,7 @@ pub fn Un(object: ReadSignal<Option<ObjectId>>) -> Element {
 
     let object_name = use_memo(move || {
         if let Some(object_id) = object() {
-            RECORDS
+            OBJECT_RECORDS
                 .iter()
                 .find(|r| r.id == object_id)
                 .map(|o| &o.values)
@@ -167,7 +96,7 @@ fn ObjectSummary(object: ReadSignal<Option<ObjectId>>) -> Element {
 
         let utc_now = Utc::now();
         for reservation in calendar_response.reservations {
-            let activity_type_string = reservation.columns[1].clone();
+            let activity_type_string = reservation.teaching_activity.clone();
             if activity_type_string.is_empty() {
                 continue; // NOTE: might be stupid to just skip?
             }
@@ -251,18 +180,19 @@ fn ObjectSummary(object: ReadSignal<Option<ObjectId>>) -> Element {
 #[component]
 fn SearchResults(
     search_text: Signal<String>,
-    search_results_value: Option<Result<ReadSignal<Vec<ObjectRecord>>, CapturedError>>,
+    search_results_value: Option<Result<ReadSignal<Vec<usize>>, CapturedError>>,
 ) -> Element {
     if search_text().is_empty() {
         return rsx! { "" };
     }
 
     match search_results_value {
-        Some(Ok(records)) => {
+        Some(Ok(indices)) => {
+            let records = indices.iter().flat_map(|idx| OBJECT_RECORDS.get(*idx));
             rsx! {
                 table {
                     id: "search-results",
-                    for record in records() {
+                    for record in records {
                         tr {
                             td {
                                 Link {
