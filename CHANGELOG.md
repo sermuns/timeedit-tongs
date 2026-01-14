@@ -1,11 +1,29 @@
 # Changelog
 
+## [v0.4.0](https://github.com/sermuns/timeedit-tongs/compare/v0.3.1..v0.4.0) - 2026-01-14
+
+### 🚀 Features
+
+- add nästa tillfälle by @sermuns in [c90572a](https://github.com/sermuns/timeedit-tongs/commit/c90572aad1d8524e3611913eb0dbc42fbcbb787f)
+
+### 🚜 Refactor
+
+- make methods private by @sermuns in [d317005](https://github.com/sermuns/timeedit-tongs/commit/d317005779fabb84d09047ff82ff55741624387a)
+
+### 🎨 Styling
+
+- changin search box look by @sermuns in [0eba20d](https://github.com/sermuns/timeedit-tongs/commit/0eba20d70cd65d31764a1fd2ddc323e2ab71be3a)
+
+### ⚙️ Miscellaneous Tasks
+
+- create todo by @sermuns in [148f9c7](https://github.com/sermuns/timeedit-tongs/commit/148f9c7009887dc25b80396dfd0d5d1e1d5cdd6e)
 ## [v0.3.1](https://github.com/sermuns/timeedit-tongs/compare/v0.3.0..v0.3.1) - 2026-01-13
 
 ### ⚙️ Miscellaneous Tasks
 
 - change push recipe by @sermuns in [e2a02f7](https://github.com/sermuns/timeedit-tongs/commit/e2a02f729ec902af95c78e5ebf044e08fe8fe021)
 - use index.thml as 404 page by @sermuns in [20790b7](https://github.com/sermuns/timeedit-tongs/commit/20790b72b1ca0ed25ac8b428d158915d714ae89b)
+- release v0.3.1 by @sermuns in [9726dbf](https://github.com/sermuns/timeedit-tongs/commit/9726dbf5815401d5274878bfff75eaeb00335ce3)
 ## [v0.3.0](https://github.com/sermuns/timeedit-tongs/compare/v0.2.2..v0.3.0) - 2026-01-13
 
 ### 🚀 Features
