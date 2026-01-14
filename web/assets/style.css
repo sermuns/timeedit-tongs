@@ -42,7 +42,7 @@ input {
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
-	padding: 1rem 0.5rem;
+	padding: 1rem;
 	gap: 2rem;
 	width: min(100%, 60rem);
 	margin: auto;
@@ -120,6 +120,7 @@ table {
 	margin: auto;
 	margin-bottom: 3em;
 	border-collapse: collapse;
+	overflow: scroll;
 	thead {
 		background-color: rgba(0, 0, 0, 0.2);
 		text-align: left;
@@ -190,7 +191,7 @@ a {
 	&[target="_blank"]::after {
 		content: "⮺";
 		color: var(--text-color);
-		font-size: 1.5em;
+		font-size: 1.1em;
 		margin-left: 0.1em;
 		display: inline-block;
 	}

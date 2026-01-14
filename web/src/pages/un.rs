@@ -1,4 +1,4 @@
-use chrono::{DateTime, NaiveDateTime, Utc};
+use chrono::{DateTime, Datelike, Locale, NaiveDateTime, Utc};
 use chrono::{NaiveDate, NaiveTime, TimeZone};
 use chrono_tz::Tz;
 use dioxus::CapturedError;
@@ -33,8 +33,9 @@ impl Reservation {
 
     // NOTE: hardcoded Stockholm timezone because i think TimeEdit API is in that??
     const TIME_ZONE: Tz = chrono_tz::Europe::Stockholm;
+    const LOCALE: Locale = chrono::Locale::sv_SE;
 
-    fn get_start_utc(&self) -> DateTime<Utc> {
+    fn start_utc(&self) -> DateTime<Utc> {
         let naive = NaiveDateTime::new(self.startdate, self.starttime);
 
         Self::TIME_ZONE
@@ -43,13 +44,28 @@ impl Reservation {
             .with_timezone(&Utc)
     }
 
-    fn get_end_utc(&self) -> DateTime<Utc> {
+    fn end_utc(&self) -> DateTime<Utc> {
         let naive = NaiveDateTime::new(self.enddate, self.endtime);
 
         Self::TIME_ZONE
             .from_local_datetime(&naive)
             .unwrap()
             .with_timezone(&Utc)
+    }
+
+    fn link(&self) -> String {
+        format!(
+            "https://cloud.timeedit.net/liu/web/schema/ri.html?sid=3&id={}",
+            self.id
+        )
+    }
+
+    fn start_localized_format(&self) -> String {
+        format!(
+            "{} | {}",
+            self.startdate.format_localized("%a %d %b %Y", Self::LOCALE),
+            self.starttime.format("kl %H:%M")
+        )
     }
 }
 
@@ -94,7 +110,6 @@ pub fn Un(object: ReadSignal<Option<ObjectId>>) -> Element {
         if let Some(object_id) = object()  {
             if let Some(object_name) = object_name() {
                 h2 { "{object_name}" }
-                small { "ID: {object_id}" }
                 ObjectSummary { object }
             } else {
                 div {
@@ -137,6 +152,7 @@ fn ObjectSummary(object: ReadSignal<Option<ObjectId>>) -> Element {
     struct ActivityOccurences {
         past_occurrences: u32,
         total_occurrences: u32,
+        next_occurence: Option<Reservation>,
     }
 
     let activity_occurences = use_resource(move || async move {
@@ -155,18 +171,21 @@ fn ObjectSummary(object: ReadSignal<Option<ObjectId>>) -> Element {
             if activity_type_string.is_empty() {
                 continue; // NOTE: might be stupid to just skip?
             }
-            let is_in_the_past = reservation.get_end_utc() < utc_now;
+            let is_in_the_past = reservation.end_utc() < utc_now;
 
             let entry = activity_occurences_map
                 .entry(activity_type_string)
                 .or_insert(ActivityOccurences {
                     past_occurrences: 0,
                     total_occurrences: 0,
+                    next_occurence: None,
                 });
             entry.total_occurrences += 1;
 
             if is_in_the_past {
                 entry.past_occurrences += 1;
+            } else if entry.next_occurence.is_none() {
+                entry.next_occurence = Some(reservation);
             }
         }
 
@@ -186,6 +205,7 @@ fn ObjectSummary(object: ReadSignal<Option<ObjectId>>) -> Element {
                             tr {
                                 th { "Typ" }
                                 th { "Passerade / totalt" }
+                                th { "Nästa tillfälle" }
                             }
                         }
                         tbody {
@@ -193,6 +213,19 @@ fn ObjectSummary(object: ReadSignal<Option<ObjectId>>) -> Element {
                                 tr {
                                     td { "{activity_type}" }
                                     td { "{occurences.past_occurrences} / {occurences.total_occurrences}" }
+                                    td {
+                                        if let Some(occurence) = &occurences.next_occurence {
+                                            a {
+                                                href: occurence.link(),
+                                                target: "_blank",
+                                                display: "block",
+                                                text_align: "right",
+                                                {occurence.start_localized_format()}
+                                            }
+                                        } else {
+                                            "Inga fler tillfällen"
+                                        }
+                                    }
                                 }
                             }
                         }
