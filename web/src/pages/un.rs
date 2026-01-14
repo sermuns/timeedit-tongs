@@ -34,7 +34,7 @@ impl Reservation {
     // NOTE: hardcoded Stockholm timezone because i think TimeEdit API is in that??
     const TIME_ZONE: Tz = chrono_tz::Europe::Stockholm;
 
-    pub fn get_start_utc(&self) -> DateTime<Utc> {
+    fn get_start_utc(&self) -> DateTime<Utc> {
         let naive = NaiveDateTime::new(self.startdate, self.starttime);
 
         Self::TIME_ZONE
@@ -43,7 +43,7 @@ impl Reservation {
             .with_timezone(&Utc)
     }
 
-    pub fn get_end_utc(&self) -> DateTime<Utc> {
+    fn get_end_utc(&self) -> DateTime<Utc> {
         let naive = NaiveDateTime::new(self.enddate, self.endtime);
 
         Self::TIME_ZONE
@@ -150,7 +150,6 @@ fn ObjectSummary(object: ReadSignal<Option<ObjectId>>) -> Element {
             FxHashMap::default();
 
         let utc_now = Utc::now();
-
         for reservation in calendar_response.reservations {
             let activity_type_string = reservation.columns[1].clone();
             if activity_type_string.is_empty() {
