@@ -86,7 +86,7 @@ pub fn Ics(objects: String) -> Element {
 
         div {
             id: "search-input-container",
-            span {"🔎"}
+            span {"🔍"}
             input {
                 r#type: "text",
                 placeholder: "Sök...",

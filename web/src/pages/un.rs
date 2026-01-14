@@ -126,7 +126,7 @@ pub fn Un(object: ReadSignal<Option<ObjectId>>) -> Element {
 
         div {
             id: "search-input-container",
-            span {"🔎"}
+            span {"🔍"}
             input {
                 r#type: "text",
                 placeholder: "Sök...",

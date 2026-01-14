@@ -160,9 +160,14 @@ label {
 }
 
 input[type="text"] {
+	&::before {
+		content: "🔍";
+	}
 	font-size: large;
 	padding: 0.2em 0.5em;
-	background-color: rgba(255, 255, 255, 0.85);
+	color: var(--text-color);
+	border-style: none;
+	background-color: rgba(0, 0, 0, 0.5);
 	flex: 1;
 }
 
