@@ -4,20 +4,18 @@
   width: 1280pt,
   height: 640pt,
   margin: 100pt,
-  fill: background,
+  fill: background-color,
 )
 
 #set text(
-  size: 100pt,
-  font: "Charlemagne",
-  fill: foreground,
+  size: 60pt,
+  font: "Hanken Grotesk",
+  fill: text-color,
 )
 
 #set align(center + horizon)
-#set image(height: 1em)
 #stack(
   dir: ltr,
-  spacing: .5em,
-  image("ocarina.svg"),
-  [ocarina-tui],
+  image("logo.svg", height: 2.5em),
+  [= timeedit-tongs],
 )

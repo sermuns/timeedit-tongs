@@ -1,14 +1,25 @@
-# TimeEdit Tongs
+<a href="https://github.com/sermuns/timeedit-tongs">
+  <img src="media/banner.png">
+</a>
 
-TimeEdit Tongs är en webbapp för att skapa kalenderprenumerationslänkar efter kurser och studentgrupper på Linköpings universitet. Allt sker direkt i webbläsaren. Ingen server.
+<div align="center">
+    <img alt="release-badge" src="https://img.shields.io/github/v/tag/sermuns/timeedit-tongs.svg">
+    <a href="https://github.com/sermuns/timeedit-tongs/blob/main/LICENSE">
+        <img alt="WTFPL" src="https://img.shields.io/badge/License-WTFPL-brightgreen.svg">
+    </a>
+</div>
+<br>
 
-**Funktioner:**
+timeedit-tongs är en webapp för att und(vika)erlätta användning av TimeEdit som student på Linköpings universitet.
 
-- (Någorlunda) snabb och smart sökning med fuzzy matchning.
-- Generera `.ics`-länkar som kan importeras i de flesta kalenderprogram.
+## Funktioner
 
-**Teknologier:**
+- Skapa kalenderprenumerationslänkar (`.ics`) genom att plocka ihop kurser och/eller studentgrupper.
 
-- Rust och Dioxus för frontend.
-- `skim`\-baserad fuzzy matching för sökningar.
-- Hårdkodat databas över kurser/studentgrupper som läses direkt i webbläsaren, vilket gör appen (någorlunda) snabb och offline-kompatibel.
+- Räkna antal föreläsningar, lektioner, etc. som har passerat i en kurs.
+
+- ... mer kommer?
+
+## Teknologier
+
+- Rust och [Dioxus](https://github.com/DioxusLabs/dioxus/) för frontend.
