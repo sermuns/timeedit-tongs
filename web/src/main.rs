@@ -39,12 +39,12 @@ pub enum Route {
 #[component]
 fn BaseLayout() -> Element {
     rsx! {
-        document::Link { rel: "icon", href: LOGO }
+        document::Link { rel: "icon", href: LOGO_ICO }
         Stylesheet { href: asset!("/assets/style.css") }
 
         header {
             h1 {
-                img { src: LOGO, height: 50 }
+                img { src: LOGO_SVG, height: 50 }
                 { PKG_NAME }
             }
             nav {
