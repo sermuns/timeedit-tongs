@@ -3,3 +3,6 @@ asset_dir = "static"
 
 [web]
 debug = false
+
+[bundle]
+icon = ["assets/favicon.ico"]
