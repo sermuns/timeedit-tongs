@@ -82,6 +82,7 @@ fn ObjectSummary(object: ReadSignal<Option<ObjectId>>) -> Element {
         past_occurrences: u32,
         total_occurrences: u32,
         next_occurence: Option<Reservation>,
+        is_occuring_now: bool,
     }
 
     let activity_occurences = use_resource(move || async move {
@@ -100,7 +101,8 @@ fn ObjectSummary(object: ReadSignal<Option<ObjectId>>) -> Element {
             if activity_type_string.is_empty() {
                 continue; // NOTE: might be stupid to just skip?
             }
-            let is_in_the_past = reservation.end_utc() < utc_now;
+            let has_ended_in_past = reservation.end_utc() < utc_now;
+            let is_occuring_now = reservation.start_utc() < utc_now && !has_ended_in_past;
 
             let entry = activity_occurences_map
                 .entry(activity_type_string)
@@ -108,10 +110,11 @@ fn ObjectSummary(object: ReadSignal<Option<ObjectId>>) -> Element {
                     past_occurrences: 0,
                     total_occurrences: 0,
                     next_occurence: None,
+                    is_occuring_now,
                 });
             entry.total_occurrences += 1;
 
-            if is_in_the_past {
+            if has_ended_in_past {
                 entry.past_occurrences += 1;
             } else if entry.next_occurence.is_none() {
                 entry.next_occurence = Some(reservation);
@@ -140,10 +143,14 @@ fn ObjectSummary(object: ReadSignal<Option<ObjectId>>) -> Element {
                         tbody {
                             for (activity_type, occurences) in activity_occurences_sorted {
                                 tr {
+                                    class: if occurences.is_occuring_now { "occuring-now" },
                                     td { "{activity_type}" }
                                     td { "{occurences.past_occurrences} / {occurences.total_occurrences}" }
                                     td {
                                         text_align: "right",
+                                        if occurences.is_occuring_now {
+                                            "Pågår just nu!"
+                                        }
                                         if let Some(occurence) = &occurences.next_occurence {
                                             a {
                                                 href: occurence.link(),

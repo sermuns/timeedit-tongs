@@ -132,8 +132,11 @@ table {
 		&:nth-child(even) {
 			background-color: rgba(0, 0, 0, 0.04);
 		}
+		&.occuring-now {
+			background-color: rgba(255, 255, 0, 0.1);
+		}
 		&:hover {
-			background-color: rgba(255, 255, 255, 0.1);
+			background-color: rgba(255, 255, 255, 0.05);
 		}
 	}
 	td,
