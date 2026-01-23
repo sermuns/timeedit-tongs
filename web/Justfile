@@ -1,0 +1,2 @@
+favicon:
+	magick -density 256x256 -background transparent ./assets/logo.svg -define icon:auto-resize -colors 256 ./assets/favicon.ico
