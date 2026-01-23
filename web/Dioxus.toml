@@ -1,6 +1,10 @@
 [application]
+asset_dir = "public"
 
-[web]
+[web.app]
+title = "timeedit-tongs"
+
+[web.wasm_opt]
 debug = false
 
 [bundle]

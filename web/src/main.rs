@@ -38,7 +38,7 @@ pub enum Route {
 #[component]
 fn BaseLayout() -> Element {
     rsx! {
-        document::Link { rel: "icon", href: LOGO_ICO }
+        document::Link { rel: "icon", href: "/favicon.ico" }
         Stylesheet { href: asset!("/assets/style.css") }
 
         header {

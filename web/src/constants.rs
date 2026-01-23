@@ -18,10 +18,6 @@ pub static MATCHER: LazyLock<SkimMatcherV2> = LazyLock::new(|| {
         .element_limit(MATCH_LIMIT)
         .ignore_case()
 });
-pub const LOGO_ICO: Asset = asset!(
-    "/assets/favicon.ico",
-    AssetOptions::builder().with_hash_suffix(false)
-);
 pub const LOGO_SVG: Asset = asset!("/assets/logo.svg");
 pub const PKG_NAME: &str = env!("CARGO_PKG_NAME");
 pub const PKG_REPOSITORY: &str = env!("CARGO_PKG_REPOSITORY");
