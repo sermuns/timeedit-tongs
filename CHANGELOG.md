@@ -1,5 +1,25 @@
 # Changelog
 
+## [v0.5.0](https://github.com/sermuns/timeedit-tongs/compare/v0.4.0..v0.5.0) - 2026-01-23
+
+### 🚀 Features
+
+- add obokat by @sermuns in [e52ccee](https://github.com/sermuns/timeedit-tongs/commit/e52ccee51e82792a6ed08913d6c0f6f9725ec327)
+- update favicon by @sermuns in [f611a62](https://github.com/sermuns/timeedit-tongs/commit/f611a62b496c20711565c9497676ca543c83c1b5)
+- add currently occcuing activity highlight by @sermuns in [d983df4](https://github.com/sermuns/timeedit-tongs/commit/d983df4f9fdf7f262fa6afd67b8eebdb7ad5bf34)
+
+### 🐛 Bug Fixes
+
+- use static dir.... by @sermuns in [b3982eb](https://github.com/sermuns/timeedit-tongs/commit/b3982eb06aa4dbe6b2dc4cd11fc06219480a895c)
+
+### 💼 Other
+
+- update dioxus to 0.7.3 by @sermuns in [e0b2a19](https://github.com/sermuns/timeedit-tongs/commit/e0b2a197dc85d74049dff2a4c0ba569f5b324dcb)
+
+### ⚙️ Miscellaneous Tasks
+
+- rice up readme, add license, etc.. by @sermuns in [a315e31](https://github.com/sermuns/timeedit-tongs/commit/a315e315a56fe3b031aeb0ed23050d307a61affe)
+- add WIP disclaimer by @sermuns in [1ed4559](https://github.com/sermuns/timeedit-tongs/commit/1ed45595b2a3ee510460e9dcad776454a8139005)
 ## [v0.4.0](https://github.com/sermuns/timeedit-tongs/compare/v0.3.1..v0.4.0) - 2026-01-14
 
 ### 🚀 Features
@@ -17,6 +37,7 @@
 ### ⚙️ Miscellaneous Tasks
 
 - create todo by @sermuns in [148f9c7](https://github.com/sermuns/timeedit-tongs/commit/148f9c7009887dc25b80396dfd0d5d1e1d5cdd6e)
+- release v0.4.0 by @sermuns in [128a64f](https://github.com/sermuns/timeedit-tongs/commit/128a64f52751d66efd0322996f7feb0cd5cc781a)
 ## [v0.3.1](https://github.com/sermuns/timeedit-tongs/compare/v0.3.0..v0.3.1) - 2026-01-13
 
 ### ⚙️ Miscellaneous Tasks
