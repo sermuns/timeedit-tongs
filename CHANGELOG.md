@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.5.1](https://github.com/sermuns/timeedit-tongs/compare/v0.5.0..v0.5.1) - 2026-01-23
+
+### 🐛 Bug Fixes
+
+- show favicon even without scripts.. by @sermuns in [9f1038f](https://github.com/sermuns/timeedit-tongs/commit/9f1038f8ece19b2627ed96458972dadd3fa743e3)
 ## [v0.5.0](https://github.com/sermuns/timeedit-tongs/compare/v0.4.0..v0.5.0) - 2026-01-23
 
 ### 🚀 Features
@@ -20,6 +25,7 @@
 
 - rice up readme, add license, etc.. by @sermuns in [a315e31](https://github.com/sermuns/timeedit-tongs/commit/a315e315a56fe3b031aeb0ed23050d307a61affe)
 - add WIP disclaimer by @sermuns in [1ed4559](https://github.com/sermuns/timeedit-tongs/commit/1ed45595b2a3ee510460e9dcad776454a8139005)
+- release v0.5.0 by @sermuns in [52a7ca7](https://github.com/sermuns/timeedit-tongs/commit/52a7ca7c6b0dd19edb6dba346b194794aa1ad75f)
 ## [v0.4.0](https://github.com/sermuns/timeedit-tongs/compare/v0.3.1..v0.4.0) - 2026-01-14
 
 ### 🚀 Features
