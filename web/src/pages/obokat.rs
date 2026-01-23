@@ -82,9 +82,9 @@ pub fn Obokat() -> Element {
 
     rsx! {
         document::Title { "{OBOKAT_ROUTE_STR} | {PKG_NAME}" }
-        button {
-            onclick: move |_| unbooked_room_indices.restart(),
-            "sök på nytt"
+        div {
+            class: "box",
+            "🚧 WORK-IN-PROGRESS: detta funkar nog inte, ännu... 🚧"
         }
         match &*unbooked_room_indices.read() {
             Some(Ok(indices)) => rsx!{
@@ -97,13 +97,13 @@ pub fn Obokat() -> Element {
             },
             Some(Err(err)) => rsx!{
                 div {
-                    class: "box",
+                    class: "box error",
                     "Fel {err:?}"
                 }
             },
             None => rsx!{
                 div {
-                    class: "box error",
+                    class: "box",
                     "Laddar.."
                 }
             }

@@ -143,12 +143,11 @@ fn ObjectSummary(object: ReadSignal<Option<ObjectId>>) -> Element {
                                     td { "{activity_type}" }
                                     td { "{occurences.past_occurrences} / {occurences.total_occurrences}" }
                                     td {
+                                        text_align: "right",
                                         if let Some(occurence) = &occurences.next_occurence {
                                             a {
                                                 href: occurence.link(),
                                                 target: "_blank",
-                                                display: "block",
-                                                text_align: "right",
                                                 {occurence.start_localized_format()}
                                             }
                                         } else {
